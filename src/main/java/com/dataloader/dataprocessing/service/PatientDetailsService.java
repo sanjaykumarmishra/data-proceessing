@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PatientDetailsService {
@@ -16,10 +17,13 @@ public class PatientDetailsService {
     @Autowired
     private PatientDetailsRepo patientDetailsRepo;
 
+    @Autowired
+    private Helper helper;
+
     public void save(MultipartFile file) {
 
         try {
-            List<PatientDetails> patientDetails = Helper.convertExcelToListOfPatientDetails(file.getInputStream());
+            List<PatientDetails> patientDetails = helper.convertExcelToListOfPatientDetails(file.getInputStream());
             System.out.println(patientDetails);
             this.patientDetailsRepo.saveAll(patientDetails);
         } catch (IOException e) {
