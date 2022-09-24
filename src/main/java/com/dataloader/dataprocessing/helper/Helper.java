@@ -64,8 +64,9 @@ public class Helper {
                 }
 
                 //To check for duplicate data and skip if data already exists in database
-                int patientId = (int) row.getCell(0).getNumericCellValue();
-                if(patientExistsById(patientId)) {
+                String patientContactNumber = formatter.formatCellValue(row.getCell(5));
+                System.out.println(patientContactNumber);
+                if(patientExistsByContactNumber(patientContactNumber)) {
                     continue;
                 }
 
@@ -136,8 +137,8 @@ public class Helper {
 
     }
 
-    public boolean patientExistsById(int id) {
-        if(patientDetailsRepo.findById(id).orElse(null)!=null) return true;
+    public boolean patientExistsByContactNumber(String patientContactNumber) {
+        if(patientDetailsRepo.findByPatientContactNumber(patientContactNumber)!=null) return true;
         else return false;
     }
 

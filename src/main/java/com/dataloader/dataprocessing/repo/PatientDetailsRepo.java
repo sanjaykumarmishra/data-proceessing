@@ -7,4 +7,7 @@ import java.util.Optional;
 
 public interface PatientDetailsRepo extends JpaRepository<PatientDetails,Integer> {
 
+//    PatientDetails findDistinctByPatientContactNumber(String patientContactNumber);
+
+    PatientDetails findByPatientContactNumber(String patientContactNumber);
 }
