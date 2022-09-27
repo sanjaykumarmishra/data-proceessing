@@ -9,8 +9,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class DataProcessingApplication implements CommandLineRunner {
 
-    @Autowired
-    PatientDetailsRepo p;
+//    @Autowired
+//    PatientDetailsRepo p;
     public static void main(String[] args) {
         SpringApplication.run(DataProcessingApplication.class, args);
     }

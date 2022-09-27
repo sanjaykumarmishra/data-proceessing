@@ -1,6 +1,7 @@
 package com.dataloader.dataprocessing.helper;
 
 import com.dataloader.dataprocessing.entity.PatientDetails;
+import com.dataloader.dataprocessing.exceptions.InvalidDateException;
 import com.dataloader.dataprocessing.repo.PatientDetailsRepo;
 import com.dataloader.dataprocessing.service.PatientDetailsService;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -65,10 +70,13 @@ public class Helper {
 
                 //To check for duplicate data and skip if data already exists in database
                 String patientContactNumber = formatter.formatCellValue(row.getCell(5));
-                System.out.println(patientContactNumber);
+//                System.out.println(patientContactNumber);
                 if(patientExistsByContactNumber(patientContactNumber)) {
                     continue;
                 }
+
+                //If DOB is null continue, since duplicate null values are getting into arraylist for null rows, applied with DOB column since null date was creating problem
+                if(row.getCell(3).getStringCellValue().length()==0) continue;
 
                 Iterator<Cell> cells = row.iterator();
 
@@ -86,19 +94,23 @@ public class Helper {
 //                            p.setPatientId((int) cell.getNumericCellValue());
 //                            break;
                         case 1:
-                            log.warn(cell.getStringCellValue());
+//                            log.warn(cell.getStringCellValue());
                             p.setPatientName(cell.getStringCellValue());
                             break;
                         case 2:
-                            log.warn(cell.getStringCellValue());
+//                            log.warn(cell.getStringCellValue());
                             p.setPatientAddress(cell.getStringCellValue());
                             break;
                         case 3:
-                            log.warn(cell.getStringCellValue());
+//                            String dateString = cell.getStringCellValue();
+//                            log.warn(String.valueOf(dateString));
+//                            p.setPatientDateofBirth(new SimpleDateFormat("MM/dd/yyyy").parse(dateString));
+
+//                            log.warn(cell.getStringCellValue());
                             p.setPatientDateofBirth(cell.getStringCellValue());
                             break;
                         case 4:
-                            log.warn(cell.getStringCellValue());
+//                            log.warn(cell.getStringCellValue());
                             p.setPatientEmail(cell.getStringCellValue());
                             break;
                         case 5:
@@ -106,15 +118,15 @@ public class Helper {
                             //or we can format the column as text directly in excel, in that case
                             //no formatter as it is used here is needed, just use getStringCellValue()
                             String number = formatter.formatCellValue(cell);
-                            log.warn(number);
+//                            log.warn(number);
                             p.setPatientContactNumber(number);
                             break;
                         case 6:
-                            log.warn(cell.getStringCellValue());
+//                            log.warn(cell.getStringCellValue());
                             p.setPatientDrugId(cell.getStringCellValue());
                             break;
                         case 7:
-                            log.warn(cell.getStringCellValue());
+//                            log.warn(cell.getStringCellValue());
                             p.setPatientDrugName(cell.getStringCellValue());
                             break;
                         default:
@@ -140,6 +152,25 @@ public class Helper {
     public boolean patientExistsByContactNumber(String patientContactNumber) {
         if(patientDetailsRepo.findByPatientContactNumber(patientContactNumber)!=null) return true;
         else return false;
+    }
+
+    public void validateDate(String dateStr) throws InvalidDateException, ParseException {
+        try {
+            if(dateStr.length()!=10) throw new InvalidDateException("Invalid Date");
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+            sdf.setLenient(false);
+            Date date = sdf.parse(dateStr);
+            Date today = sdf.parse(sdf.format(new Date()));
+//            System.out.println(today.compareTo(date));
+//            System.out.println(today+"-----"+date);
+            if(today.compareTo(date) < 0 || today.compareTo(date) == 0) {
+                throw new InvalidDateException("DOB should be less than today's date");
+            }
+        } catch (ParseException e) {
+            throw e;
+        }
+
+
     }
 
 }
