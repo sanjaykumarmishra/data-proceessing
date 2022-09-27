@@ -156,7 +156,7 @@ public class Helper {
 
     public void validateDate(String dateStr) throws InvalidDateException, ParseException {
         try {
-            if(dateStr.length()!=10) throw new InvalidDateException("Invalid Date");
+            if(dateStr.length()!=10) throw new InvalidDateException("Invalid Date Pattern: Format -> MM/dd/yyyy");
             SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
             sdf.setLenient(false);
             Date date = sdf.parse(dateStr);
